@@ -20,6 +20,8 @@ def scatter_plot(xaxis, yaxis, color, df):
                         y = yaxis,
                         color = color,
                         title = 'Scatter plot')
+    
+    
     return figure
 
 
@@ -66,22 +68,30 @@ def generate_graph(chart_type, xaxis, yaxis, color, df):
 
     graph = None
     if chart_type[0] == 'L':
-        graph = dcc.Graph(
-            figure = line_plot(xaxis, yaxis, color, df)
-        )
+        figure = line_plot(xaxis, yaxis, color, df)
+
     elif chart_type[0] == 'S':
-        graph = dcc.Graph(
-            figure = scatter_plot(xaxis, yaxis, color, df)
-        )
+        figure = scatter_plot(xaxis, yaxis, color, df)
+
     elif chart_type[0] == 'A':
-        graph = dcc.Graph(
-            figure = area_plot(xaxis, yaxis, color, df)
-        )
+        figure = area_plot(xaxis, yaxis, color, df)
 
     elif chart_type[0] == 'B':
-        graph = dcc.Graph(
-            figure = bar_plot(xaxis, yaxis, color, df)
+        figure = bar_plot(xaxis, yaxis, color, df)
+        
+    if figure is not None:
+        figure.update_layout(paper_bgcolor = '#000428', title_font = dict(color = 'white'),
+                             legend_font = dict(color = 'white'))
+        figure.update_xaxes(
+        tickfont=dict(color="white"),  # X-axis ticks
+        title_font = dict(color = 'white')
+            )
+
+        figure.update_yaxes(
+            tickfont=dict(color="white"),  # Y-axis ticks
+            title_font = dict(color = 'white')
         )
+        graph = dcc.Graph(figure = figure)
 
     return graph
 

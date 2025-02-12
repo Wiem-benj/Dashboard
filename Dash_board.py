@@ -21,7 +21,7 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 def dropdown_template(name, options = {'':''}):
 
     dropdown = html.Div([
-                html.Label('Select the {:}'.format(name)),
+                html.Label('Select the {:}'.format(name), style = {'color':'white'}),
                 dcc.Dropdown(
                     id = name,
                     options = options,
@@ -37,24 +37,26 @@ def dropdown_template(name, options = {'':''}):
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 # Set the title of the dashboard
-header = html.H2(children = 'Dashboard for Data visualization', 
-                 style={'text-align': 'center', 'justifyContent':'center', 'height': '70px'})
+header = html.Div(children = 'Dashboard for Data visualization', 
+                 style={'text-align': 'center', 'justifyContent':'center', 'height': '100px', 'color': 'white',
+                        'backgroundColor': '#000428', 'font-size': '40px'})
 
 # row_1 contains 3 parts which highlights the selection of the file
 row_1 = html.Div([
                 html.Div('Start by selecting a csv or xlsx file', id = 'select-file', 
-                         style = {'display':'inline-block', 'height': '50px', 'margin-right':'10px'}),
+                         style = {'display':'inline-block', 'height': '50px', 'margin-right':'10px', 'color': 'white'}),
                 html.Div([
                     dcc.Upload(
                     id = 'upload-data',
                     children = dbc.Button('📁 Browse CSV or XLSX File', color='primary', className='mt-2', size='lg'),
                     multiple = False,
                     accept = '.csv, .xlsx',
-                    )], style={'display': 'inline-block', 'vertical-align': 'middle'}),
+                    )], style={'display': 'inline-block', 'vertical-align': 'middle', 'backgroundColor': 'white'}),
                     html.Div(
-                        id='output-data-upload', style={'display': 'inline-block', 'vertical-align': 'middle'})
+                        id='output-data-upload', style={'display': 'inline-block', 'vertical-align': 'middle',
+                                                        'margin-left': '10px'})
                     
-])
+], style = {'backgroundColor': '#000428', 'border-bottom': '2px solid grey'})
 
 chart_type = dropdown_template('chart type', {'Line Chart': 'Line Chart', 'Scatter Chart': 'Scatter Chart', 'Area Chart': 'Area Chart', 'Bar Chart': 'Bar Chart'})
 
@@ -81,14 +83,16 @@ row_2 = html.Div([
             'flexDirection': 'column',
             'gap': '10px',  # Space between dropdowns
             'padding': '20px',
-            'backgroundColor': '#f8f9fa'  # Light gray background
+            'border-right': '2px solid grey',
+            'backgroundColor': '#000428'  # Blue background
             }),
             # Right column
             html.Div([
                  html.Div(id = 'container')
             ], style={
             'width': '75%',  # Right column takes 75% of width
-            'padding': '20px'
+            'padding': '20px',
+            'backgroundColor': '#000428'  # Light gray background
         })
         ], style={
         'display': 'flex',  # Flexbox to arrange columns
@@ -117,11 +121,11 @@ def read_data(contents, filename):
 
     global df
     if contents is None:
-        return dbc.Alert('No file uploaded yet', style = {'color': 'red'}), True, {}, {}, {}
+        return dbc.Alert('No file uploaded yet!', style = {'color': 'red'}), True, {}, {}, {}
     else:
         df = backend_logic.read_data(contents, filename)
         if df is None:
-            return dbc.Label('There was an error when loading the data', style = {'color': 'red'}), False, {}, {}, {}
+            return dbc.Label('There was an error when loading the data!', style = {'color': 'red'}), False, {}, {}, {}
         else:
             options = [{'label': column, 'value': column} for column in df.columns]
             # color dropdown should only get the features that have unique values <= 6 unique values.
