@@ -165,7 +165,7 @@ def dropdown(chart_type):
 def generate_graph(chart_type, xaxis, yaxis, color):
 
     # These are the main fields to be checked if empty
-    if chart_type is None or xaxis is None or yaxis is None:
+    if chart_type is None or xaxis is None or (yaxis is None and chart_type[0] != 'B'):
         return None
     
     else:
