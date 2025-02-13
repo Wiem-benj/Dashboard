@@ -1,6 +1,8 @@
 # Dashboard
 An interactive Dashboard developped with Plotly for data visualization.
 
+Please note that the file 'Dash_board.py' is the main file of the dashboard application to be run. The second python file 'backend_logic.py' contains the functions that are called within the callback functions.
+
 When running the dashboard:
 
 1- Select a csv or excel file to be processed.
