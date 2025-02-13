@@ -38,9 +38,12 @@ def area_plot(xaxis, yaxis, color, df):
 
 def bar_plot(xaxis, yaxis, color, df):
 
-    # For the Bar chart specifically we allow the yaxis to be not selected by the user and in this case we treat it
-    # as the count of the xaxis
-    if yaxis is None:
+    # If xaxis and color are the same column and no yaxis is selected then there wouldn't be a plot generated
+    if yaxis is None and xaxis == color:
+        return None
+    elif yaxis is None:
+        # For the Bar chart specifically we allow the yaxis to be not selected by the user and in this case we treat it
+        # as the count of the xaxis
         yaxis = 'count'
 
         group = [xaxis, color] if color is not None else xaxis
