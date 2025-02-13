@@ -35,6 +35,7 @@ def dropdown_template(name, options = {'':''}):
 
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+# This line of code needed in the step of deploying the dashboard web application online for free in Render.  
 server = app.server
 
 # Set the title of the dashboard
