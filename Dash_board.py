@@ -79,7 +79,7 @@ row_2 = html.Div([
                 y_axis,
                 color
             ], style={
-            'width': '25%',  # Left column takes 25% of width
+            'width': '21%',  # Left column takes 25% of width
             'display': 'flex',
             'flexDirection': 'column',
             'gap': '10px',  # Space between dropdowns
@@ -91,7 +91,7 @@ row_2 = html.Div([
             html.Div([
                  html.Div(id = 'container')
             ], style={
-            'width': '75%',  # Right column takes 75% of width
+            'width': '71.5%',  # Right column takes 75% of width
             'padding': '20px',
             'backgroundColor': '#000428'  # Light gray background
         })
