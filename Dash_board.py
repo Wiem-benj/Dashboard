@@ -35,6 +35,7 @@ def dropdown_template(name, options = {'':''}):
 
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+server = app.server
 
 # Set the title of the dashboard
 header = html.Div(children = 'Dashboard for Data visualization', 
