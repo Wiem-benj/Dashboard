@@ -127,7 +127,7 @@ def read_data(contents, filename):
     else:
         df = backend_logic.read_data(contents, filename)
         if df is None:
-            return dbc.Label('There was an error when loading the data!', style = {'color': 'red'}), False, {}, {}, {}
+            return dbc.Label('There was an error when loading the data!', style = {'color': 'red'}), True, {}, {}, {}
         else:
             options = [{'label': column, 'value': column} for column in df.columns]
             # color dropdown should only get the features that have unique values <= 6 unique values.
