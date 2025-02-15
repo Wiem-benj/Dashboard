@@ -41,7 +41,7 @@ server = app.server
 # Set the title of the dashboard
 header = html.Div(children = 'Dashboard for Data visualization', 
                  style={'text-align': 'center', 'justifyContent':'center', 'height': '100px', 'color': 'white',
-                        'backgroundColor': '#000428', 'font-size': '40px'})
+                        'font-size': '40px'})
 
 # row_1 contains 3 parts which highlights the selection of the file
 row_1 = html.Div([
@@ -56,9 +56,9 @@ row_1 = html.Div([
                     )], style={'display': 'inline-block', 'vertical-align': 'middle', 'backgroundColor': 'white'}),
                     html.Div(
                         id='output-data-upload', style={'display': 'inline-block', 'vertical-align': 'middle',
-                                                        'margin-left': '10px'})
+                                                        'margin-left': '10px', 'fontWeight': 'bold'})
                     
-], style = {'backgroundColor': '#000428', 'border-bottom': '2px solid grey'})
+])
 
 chart_type = dropdown_template('chart type', {'Line Chart': 'Line Chart', 'Scatter Chart': 'Scatter Chart', 'Area Chart': 'Area Chart', 'Bar Chart': 'Bar Chart'})
 
@@ -84,9 +84,11 @@ row_2 = html.Div([
             'display': 'flex',
             'flexDirection': 'column',
             'gap': '10px',  # Space between dropdowns
-            'padding': '20px',
-            'border-right': '2px solid grey',
-            'backgroundColor': '#000428'  # Blue background
+            'padding': '20px', # padding between dropdownlists and the border of the box
+            'border': '2px solid grey',
+            "backgroundColor": '#333333',  # Grey background
+            "borderRadius": "10px",  # Rounded corners
+            'height': '35vh'
             }),
             # Right column
             html.Div([
@@ -94,12 +96,17 @@ row_2 = html.Div([
             ], style={
             'width': '71.5%',  # Right column takes 75% of width
             'padding': '20px',
-            'backgroundColor': '#000428'  # Light gray background
+            'gap': '10px',  # Space between dropdowns
+            #'padding': '15px', # padding between dropdownlists and the border of the box
+            'border': '2px solid grey',
+            "backgroundColor": '#333333',  # Grey background
+            "borderRadius": "10px",  # Rounded corners
+            'margin-left': '5px',
+            'height': '60vh'
         })
         ], style={
         'display': 'flex',  # Flexbox to arrange columns
-        'width': '100vw',  # Full viewport width
-        'height': '100vh'  # Full viewport height
+        'width': '100vw'#,  # Full viewport width
     })
 ])
 
@@ -127,13 +134,13 @@ def read_data(contents, filename):
     else:
         df = backend_logic.read_data(contents, filename)
         if df is None:
-            return dbc.Label('There was an error when loading the data!', style = {'color': 'red'}), True, {}, {}, {}
+            return dbc.Label('There was an error when loading the data!', style = {'color': 'red'}), False, {}, {}, {}
         else:
             options = [{'label': column, 'value': column} for column in df.columns]
             # color dropdown should only get the features that have unique values <= 6 unique values.
             options_color = [column for column in df.columns if len(df[column].value_counts()) <= 6]
 
-            return dbc.Label('{}'.format(filename), style = {'color': 'green'}), False, options, options, options_color
+            return dbc.Label('{}'.format(filename), style = {'color': '#90EE90'}), False, options, options, options_color
 
 # We are setting the enabling of the dropdown axis based on the chart type, because we will have some chart types
 # with a number of dropdowns enabled and others not e.g. Pie plot does not have x and y axis 

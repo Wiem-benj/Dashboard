@@ -92,7 +92,7 @@ def generate_graph(chart_type, xaxis, yaxis, color, df):
         figure = bar_plot(xaxis, yaxis, color, df)
         
     if figure is not None:
-        figure.update_layout(paper_bgcolor = '#000428', title_font = dict(color = 'white'),
+        figure.update_layout(paper_bgcolor = '#333333', title_font = dict(color = 'white'),
                              legend_font = dict(color = 'white'))
         figure.update_xaxes(
         tickfont=dict(color="white"),  # X-axis ticks
