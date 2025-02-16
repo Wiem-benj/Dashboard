@@ -19,3 +19,5 @@ Kindly note that Plotly automatically filter out any null data when plotting. In
 
 Please kindly note that the processing of large data with more than 30k records may seems slow in this version of code especially for the case of excel files extension.
 
+# Deployment
+This developed dashboard is deployed in Render. You may visit this link to visualize its online version https://dashboard-gzkk.onrender.com
