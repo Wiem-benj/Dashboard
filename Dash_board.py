@@ -13,6 +13,8 @@ from dash.dependencies import Input, Output, State
 import plotly.graph_objs as go
 import dash_bootstrap_components as dbc
 import backend_logic
+import tensorflow_data_validation as tfdv
+from tensorflow_data_validation.utils.display_util import get_statistics_html
 
 df = None
 # Initialize the Dash app
@@ -70,7 +72,7 @@ color = dropdown_template('color')
 
 # row_2 contains a first part which include the 1st column with the select type chart drop down and the variable choices part
 # The second column which is the larger is the plot
-row_2 = html.Div([
+tab_2 = html.Div([
         # main layout
         html.Div([
             #Left column layout
@@ -110,8 +112,15 @@ row_2 = html.Div([
     })
 ])
 
+tab_1 = html.Div(id = 'data-analysis', style = {'backgroundColor': 'white', 'width': '100%'})
 
-layout = html.Div(children=[header, row_1, row_2])
+layout = html.Div(children=[header, row_1, 
+                            dcc.Tabs(id = 'tabs_content', value='tab-1-example-graph',
+                            children = [
+                                dcc.Tab(label = 'Data analysis', value = 'tab1', children = tab_1),
+                                dcc.Tab(label = 'Charts', value = 'tab2', children= tab_2),
+                            ])
+                            ])
 
 app.layout = layout
 
@@ -122,6 +131,7 @@ app.layout = layout
     Output('x-axis', 'options'),
     Output('y-axis', 'options'),
     Output('color', 'options'),
+    Output('data-analysis', 'children'),
     Input('upload-data', 'contents'),
     State('upload-data', 'filename')
 )
@@ -130,17 +140,26 @@ def read_data(contents, filename):
 
     global df
     if contents is None:
-        return dbc.Alert('No file uploaded yet!', style = {'color': 'red'}), True, {}, {}, {}
+        return dbc.Alert('No file uploaded yet!', style = {'color': 'red'}), True, {}, {}, {}, None
     else:
         df = backend_logic.read_data(contents, filename)
         if df is None:
-            return dbc.Label('There was an error when loading the data!', style = {'color': 'red'}), False, {}, {}, {}
+            return dbc.Label('There was an error when loading the data!', style = {'color': 'red'}), False, {}, {}, {}, None
         else:
             options = [{'label': column, 'value': column} for column in df.columns]
             # color dropdown should only get the features that have unique values <= 6 unique values.
             options_color = [column for column in df.columns if len(df[column].value_counts()) <= 6]
 
-            return dbc.Label('{}'.format(filename), style = {'color': '#90EE90'}), False, options, options, options_color
+            data_stats = tfdv.generate_statistics_from_dataframe(df)
+
+            #ht = tfdv.visualize_statistics(data_stats)
+            #print(html)
+            ht=tfdv.get_statistics_html(data_stats)
+            #print(ht)
+
+            return dbc.Label('{}'.format(filename), style = {'color': '#90EE90'}), False, options, options, options_color, html.Div([
+        html.Iframe(srcDoc=ht, style = {'width':"100%", 'minHeight': '1000px'})
+    ], style = {'width':"100%", 'minHeight': '1000px', 'backgroundColor': 'white'})
 
 # We are setting the enabling of the dropdown axis based on the chart type, because we will have some chart types
 # with a number of dropdowns enabled and others not e.g. Pie plot does not have x and y axis 
