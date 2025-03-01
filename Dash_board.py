@@ -188,8 +188,6 @@ def read_data(contents, filename):
 
             ht=tfdv.get_statistics_html(data_stats)
 
-            pd.options.display.float_format = '{:,.0f}'.format
-
             numeric_features = [feature.path.step[0] for feature in data_stats.datasets[0].features if feature.HasField('num_stats')]
 
             return dbc.Label('{}'.format(filename), style = {'color': '#90EE90'}), False, options, options, options_color, \
