@@ -92,18 +92,41 @@ def generate_graph(chart_type, xaxis, yaxis, color, df):
         figure = bar_plot(xaxis, yaxis, color, df)
         
     if figure is not None:
-        figure.update_layout(paper_bgcolor = '#333333', title_font = dict(color = 'white'),
-                             legend_font = dict(color = 'white'))
-        figure.update_xaxes(
-        tickfont=dict(color="white"),  # X-axis ticks
-        title_font = dict(color = 'white')
-            )
-
-        figure.update_yaxes(
-            tickfont=dict(color="white"),  # Y-axis ticks
-            title_font = dict(color = 'white')
-        )
+        figure = layout_update(figure)
         graph = dcc.Graph(figure = figure)
 
     return graph
 
+def correlation(data, features):
+
+    df_corr = data[features].corr().round(2)
+    figure = px.imshow(df_corr, text_auto=True)
+    figure = layout_update(figure)
+
+    graph = dcc.Graph(figure = figure)
+    
+    return graph
+
+def parallel_coordinate(df, features):
+
+    figure = px.parallel_coordinates(df[features])
+
+    figure = layout_update(figure)
+    graph = dcc.Graph(figure = figure)
+
+    return graph
+
+def layout_update(figure):
+
+    figure.update_layout(paper_bgcolor = '#333333', title_font = dict(color = 'white'),
+                            legend_font = dict(color = 'white'), font=dict(color="white", size=12))
+    #figure.update_xaxes(
+    #    tickfont=dict(color="white"),  # X-axis ticks
+    #    title_font = dict(color = 'white')
+    #    )
+    #figure.update_yaxes(
+    #    tickfont=dict(color="white"),  # Y-axis ticks
+    #    title_font = dict(color = 'white')
+    #)
+
+    return figure
