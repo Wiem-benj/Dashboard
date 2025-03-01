@@ -3,3 +3,31 @@ body {
     margin: 0;
     padding: 0;
 }
+.header{
+    text-align: center;
+    justify-content: center;
+    height: 100px;
+    color: white;
+    font-size: 40px;
+}
+.leftcolumn{
+    width: 21%;  /* Left column takes 25% of width*/
+    display: flex;
+    flex-direction: column;
+    gap: 10px;  /*Space between dropdowns*/
+    padding: 20px; /*padding between dropdownlists and the border of the box*/
+    border: 2px solid grey;
+    background-color: #333333;  /*Grey background*/
+    border-radius: 10px;  /*Rounded corners*/
+    height: 35vh
+}
+.rightcolumn{
+    width: 71.5%;  /*Right column takes 75% of width*/
+    padding: 20px;
+    gap: 10px;  /*Space between dropdowns*/
+    border: 2px solid grey;
+    background-color: #333333;  /*Grey background*/
+    border-radius: 10px;  /*Rounded corners*/
+    margin-left: 5px;
+    height: 60vh
+}
