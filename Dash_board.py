@@ -166,19 +166,41 @@ app.layout = layout
     Output('data-analysis', 'children'),
     Output('features', 'options'),
     Output('features', 'disabled'),
+    Output('chart type', 'value'), 
+    Output('x-axis', 'value'),
+    Output('y-axis', 'value'),
+    Output('color', 'value'),
+    Output('eda-type', 'value'),
+    Output('features', 'value'),
     Input('upload-data', 'contents'),
     State('upload-data', 'filename')
 )
 
 def read_data(contents, filename):
+    '''
+    This function mainly read the data from the provided filename into a dataframe which is set to global.
+    Also this function re-initlize the dropdowns in the Dashboard to NO value as their initial state after each new read of data.
 
+    Parameters:
+    ------------
+    contents: str
+        The content of the file uploaded in specific format but is later decoded in read_data() function.
+    filename: str
+        The file name selected by the user to be uploaded
+
+
+    '''
+    
     global df
+    print('type(contents) ', contents)
     if contents is None:
-        return dbc.Alert('No file uploaded yet!', style = {'color': 'red'}), True, {}, {}, {}, None, {}, True
+        return dbc.Alert('No file uploaded yet!', style = {'color': 'red'}), True, {}, {}, {}, None, {}, True, None, \
+            None, None, None, None, None
     else:
         df = backend_logic.read_data(contents, filename)
         if df is None:
-            return dbc.Label('There was an error when loading the data!', style = {'color': 'red'}), True, {}, {}, {}, None, {}, True
+            return dbc.Label('There was an error when loading the data!', style = {'color': 'red'}), True, {}, {}, {}, \
+                None, {}, True, None, None, None, None, None, None
         else:
             options = [{'label': column, 'value': column} for column in df.columns]
             # color dropdown should only get the features that have unique values <= 6 unique values.
@@ -191,7 +213,8 @@ def read_data(contents, filename):
             numeric_features = [feature.path.step[0] for feature in data_stats.datasets[0].features if feature.HasField('num_stats')]
 
             return dbc.Label('{}'.format(filename), style = {'color': '#90EE90'}), False, options, options, options_color, \
-            html.Iframe(srcDoc=ht, style = {'width':"100%", 'minHeight': '2500px', 'overflow': 'auto'}), numeric_features, False
+            html.Iframe(srcDoc=ht, style = {'width':"100%", 'minHeight': '2500px', 'overflow': 'auto'}), numeric_features, \
+                False, None, None, None, None, None, None
 
 # We are setting the enabling of the dropdown axis based on the chart type, because we will have some chart types
 # with a number of dropdowns enabled and others not e.g. Pie plot does not have x and y axis 
