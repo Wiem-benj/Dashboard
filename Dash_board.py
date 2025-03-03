@@ -80,6 +80,21 @@ row_1 = html.Div([
                     
 ])
 
+#row_2 = html.Div([
+#    html.Div('Select the nan handling strategy', style = {'display':'inline-block', 'height': '50px', 
+#                                                          'margin-right':'10px', 'color': 'white'}),
+#    html.Div(dcc.Dropdown(
+#                id = 'null-handling',
+#                options = {'Drop':'Drop', 'Mean':'Mean'},
+#                #value = 'Select chart type',
+#                placeholder = 'Select the strategy',
+#                multi = False
+#                ),
+#                style={'display': 'inline-block', 'vertical-align': 'middle','margin-left': '10px', 'fontWeight': 'bold',
+#                       'width':'180px'}
+#    )
+#                ])
+
 chart_type = dropdown_template('chart type', False, {'Line Chart': 'Line Chart', 'Scatter Chart': 'Scatter Chart', 
 'Area Chart': 'Area Chart', 'Bar Chart': 'Bar Chart'})
 
@@ -88,6 +103,8 @@ x_axis = dropdown_template('x-axis', False)
 y_axis = dropdown_template('y-axis', False)
 
 color = dropdown_template('color', False)
+
+strategy_nan = dropdown_template('nan handling strategy', False, {'Drop':'Drop', 'Mean':'Mean'})
 
 tab_1 = html.Div(id = 'data-analysis', style = {'backgroundColor': 'white', 'width': '100%'})
 
@@ -132,7 +149,8 @@ tab_3 = html.Div([
             #Left column layout
             html.Div([
                 eda_type,
-                features
+                features,
+                strategy_nan
             ], className = 'leftcolumn'),
             # Right column
             html.Div([
@@ -145,7 +163,7 @@ tab_3 = html.Div([
 ])
 
 
-layout = html.Div(children=[header, row_1, 
+layout = html.Div(children=[header, row_1,
                             dcc.Tabs(id = 'tabs_content', value='tab-1-example-graph',
                             children = [
                                 dcc.Tab(label = 'Data analysis', value = 'tab1', children = tab_1),
@@ -172,6 +190,8 @@ app.layout = layout
     Output('color', 'value'),
     Output('eda-type', 'value'),
     Output('features', 'value'),
+    Output('nan handling strategy', 'disabled'),
+    Output('nan handling strategy', 'value'),
     Input('upload-data', 'contents'),
     State('upload-data', 'filename')
 )
@@ -188,33 +208,34 @@ def read_data(contents, filename):
     filename: str
         The file name selected by the user to be uploaded
 
-
     '''
     
     global df
-    print('type(contents) ', contents)
     if contents is None:
         return dbc.Alert('No file uploaded yet!', style = {'color': 'red'}), True, {}, {}, {}, None, {}, True, None, \
-            None, None, None, None, None
+            None, None, None, None, None, True, None
     else:
         df = backend_logic.read_data(contents, filename)
         if df is None:
             return dbc.Label('There was an error when loading the data!', style = {'color': 'red'}), True, {}, {}, {}, \
-                None, {}, True, None, None, None, None, None, None
+                None, {}, True, None, None, None, None, None, None, True, None
         else:
-            options = [{'label': column, 'value': column} for column in df.columns]
+            df_features_nonempty = [column for column in df.columns if not(df[column].isna().all())]
+
+            df_features_options = [{'label': column, 'value': column} for column in df_features_nonempty]
             # color dropdown should only get the features that have unique values <= 6 unique values.
-            options_color = [column for column in df.columns if len(df[column].value_counts()) <= 6]
+            options_color = [column for column in df_features_nonempty if len(df[column].value_counts()) <= 6]
 
             data_stats = tfdv.generate_statistics_from_dataframe(df)
 
             ht=tfdv.get_statistics_html(data_stats)
 
-            numeric_features = [feature.path.step[0] for feature in data_stats.datasets[0].features if feature.HasField('num_stats')]
+            numeric_features = [feature.path.step[0] for feature in data_stats.datasets[0].features if feature.HasField('num_stats')
+                                and feature.num_stats.common_stats.num_non_missing > 0]
 
-            return dbc.Label('{}'.format(filename), style = {'color': '#90EE90'}), False, options, options, options_color, \
+            return dbc.Label('{}'.format(filename), style = {'color': '#90EE90'}), False, df_features_options, df_features_options, options_color, \
             html.Iframe(srcDoc=ht, style = {'width':"100%", 'minHeight': '2500px', 'overflow': 'auto'}), numeric_features, \
-                False, None, None, None, None, None, None
+                False, None, None, None, None, None, None, False, 'Drop'
 
 # We are setting the enabling of the dropdown axis based on the chart type, because we will have some chart types
 # with a number of dropdowns enabled and others not e.g. Pie plot does not have x and y axis 
@@ -258,20 +279,26 @@ def generate_graph(chart_type, xaxis, yaxis, color):
     Output('eda', 'children'),
     Input('features', 'value'),
     Input('eda-type', 'value'),
+    Input('nan handling strategy', 'value'),
     prevent_initial_call = True
 )
-def eda_graph(features, eda_type):
+def eda_graph(features, eda_type, nan_strategy):
     
-    if eda_type == 'Correlation' and features is not None and len(features) >= 1:
-        graph = backend_logic.correlation(df, features)
-        return graph
+    if features is not None and len(features) > 0: 
+        df_nan = df[features]
+        if nan_strategy == 'Mean':
+            for column in df_nan.columns:
+                df_nan[column].fillna(df_nan[column].mean(), inplace = True)
 
-    elif eda_type == 'Parallel coordinate' and features is not None and len(features) >= 1:
-        graph = backend_logic.parallel_coordinate(df, features)
-        return graph
+        if eda_type == 'Correlation' and features is not None and len(features) >= 1:
+            graph = backend_logic.correlation(df_nan)
+            return graph
 
-    else:
-        return None
+        elif eda_type == 'Parallel coordinate' and features is not None and len(features) >= 1:
+            graph = backend_logic.parallel_coordinate(df_nan)
+            return graph
+
+    return None
 
 
 # Run the Dash app
