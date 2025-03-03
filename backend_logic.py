@@ -97,9 +97,9 @@ def generate_graph(chart_type, xaxis, yaxis, color, df):
 
     return graph
 
-def correlation(data, features):
+def correlation(data):
 
-    df_corr = data[features].corr().round(2)
+    df_corr = data.corr().round(2)
     figure = px.imshow(df_corr, text_auto=True)
     figure = layout_update(figure)
 
@@ -107,9 +107,9 @@ def correlation(data, features):
     
     return graph
 
-def parallel_coordinate(df, features):
+def parallel_coordinate(data):
 
-    figure = px.parallel_coordinates(df[features])
+    figure = px.parallel_coordinates(data)
 
     figure = layout_update(figure)
     graph = dcc.Graph(figure = figure)
