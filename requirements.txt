@@ -1,5 +1,6 @@
 dash==2.18.2
 dash-bootstrap-components
+gunicorn==23.0.0
 flask==3.0.3
 matplotlib==3.9.4
 plotly==6.0.0
