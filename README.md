@@ -21,13 +21,13 @@ The data analysis summary for categorical features include: percentage of missin
 3- Select 'Charts' tab to generate plots (scatter, line, area, bar plots) by selecting the plot the xaxis feature (mandatory field for all the chart types), the yaxis of the plot (mandatory field for all chart types except bar plot) and the color (Optional). 
 For the Bar plot selecting xaxis without selecting the yaxis result in bar plot with values on the xaxis and their counts on the yaxis.
 The color is the paramater color in the plots functions (Line, Scatter, Area, and Bar). It serves like a 3rd dimension where it gives more insights to the selected data in the xaxis and yaxis.
-![image](https://github.com/user-attachments/assets/505cb273-64fc-44a7-82c7-67a64b3146c9)
+![image](https://github.com/user-attachments/assets/7901c995-d909-4245-bda9-796e2e57e142)
 
 4- Select 'Exploratory Data Analysis' to visualize the correlation or the Parallel coordinate plot between numerical features by selecting them from the dropdown list 'Select the features'. The dropdown list of 'Select the nan handling strategy' is set by default as 'Drop', so that when the Parallel coordinate or the correlation plot is generated it drops the missing values rows of the features selected. If the handling strategy is set to 'Mean', then the Parallel coordinate and the correlation plot will be generated with all the data including the missing values set to the average.
 #### Below is a Correlation plot
-![image](https://github.com/user-attachments/assets/f029dcc0-d957-4f5a-9183-83a1e9364c7c)
+![image](https://github.com/user-attachments/assets/c5faf3fb-12bf-4ab9-933b-e19744f86a47)
 #### Below is a Parallel coordinate plot
-![image](https://github.com/user-attachments/assets/08ef9e16-e0c0-4ac3-a063-cf7b62537304)
+![image](https://github.com/user-attachments/assets/3ff86f43-a7a8-4bae-b605-2f4f7d1e73c4)
 
 
 Please kindly note that the processing of large data with more than 30k records may seems slow in this version of code especially for the case of excel files extension.
