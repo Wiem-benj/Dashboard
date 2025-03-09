@@ -164,11 +164,14 @@ tab_3 = html.Div([
 
 
 layout = html.Div(children=[header, row_1,
-                            dcc.Tabs(id = 'tabs_content', value='tab-1-example-graph',
+                            dcc.Tabs(className='custom-tabs-container',
                             children = [
-                                dcc.Tab(label = 'Data analysis', value = 'tab1', children = tab_1),
-                                dcc.Tab(label = 'Charts', value = 'tab2', children= tab_2),
-                                dcc.Tab(label = 'Exploratory Data Analysis', value = 'tab3', children= tab_3),
+                                dcc.Tab(label = 'Data analysis', value = 'tab1', children = tab_1, className='custom-tab',
+                                        selected_className='custom-tab--selected'),
+                                dcc.Tab(label = 'Charts', value = 'tab2', children= tab_2, className='custom-tab',
+                                        selected_className='custom-tab--selected'),
+                                dcc.Tab(label = 'Exploratory Data Analysis', value = 'tab3', children= tab_3, className='custom-tab',
+                                        selected_className='custom-tab--selected'),
                             ])
                             ])
 
