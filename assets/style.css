@@ -31,3 +31,26 @@ body {
     margin-left: 5px;
     height: 60vh
 }
+.custom-tabs-container{
+    width: 100%;
+}
+.custom-tabs{
+    background-color: darkgray !important;
+    border-top-left-radius: 3px;
+}
+.custom-tab{
+    font-size: 20px !important;
+    background-color: darkgray !important;
+    border-top-left-radius: 3px;
+    border-top: 3px solid transparent !important;
+    border-left: 1px solid black !important;
+    border-right: 1px solid black !important;
+    font-family: "system-ui";
+    color: white;
+    font-weight: bold;
+}
+.custom-tab--selected{
+    color: rgba(171, 8, 8, 0.704) !important;
+    border-top: 5px solid rgba(171, 8, 8, 0.704)!important;
+    background-color: grey !important;
+}
