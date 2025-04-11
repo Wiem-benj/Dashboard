@@ -67,13 +67,19 @@ def read_data(contents, filename):
     try:
         if '.csv' in filename.lower():
             # Read CSV file
-            df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+            df = pd.read_csv(io.StringIO(decoded.decode('utf-8')), engine = 'pyarrow')
         else:
             df = pd.read_excel(io.BytesIO(decoded))
+            # In the case of excel file formats, we need to check for any mixed type columns set their types to str.
+            # This is because the later tensforflow data validation process will not handle a column with mixed 
+            # type from the excel file format reading.
+            for col in df.columns:
+                if pd.api.types.infer_dtype(df[col]) in ['mixed', 'mixed-integer']:
+                    df[col] = df[col].astype(str)
+
     except Exception as e:
         print(e)
         return None
-    
     return df
     
 def generate_graph(chart_type, xaxis, yaxis, color, df):
