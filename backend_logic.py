@@ -3,6 +3,7 @@ import io
 import pandas as pd
 from dash import dcc
 import plotly.express as px
+import plotly.graph_objects as go
 
 def line_plot(xaxis, yaxis, color, df):
 
@@ -113,11 +114,24 @@ def correlation(data):
     
     return graph
 
-def parallel_coordinate(data):
+def parallel_coordinate(data, numeric_features):
 
-    figure = px.parallel_coordinates(data)
+    dim = []
+    for col in data.columns:
+        if col in numeric_features:
+            dim.append(dict(label = col, values = data[col]))
+        else:
+            data[col+'_encoded'] = data[col].astype('category').cat.codes
+            labels = data[col].astype('category').cat.categories
+            dim.append(dict(label = col, tickvals = list(range(len(labels))),ticktext = list(labels) , values = data[col+'_encoded']))
+
+    figure = go.Figure(data=
+                       go.Parcoords(
+                           dimensions = dim
+))
 
     figure = layout_update(figure)
+
     graph = dcc.Graph(figure = figure)
 
     return graph

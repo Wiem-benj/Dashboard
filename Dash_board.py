@@ -15,7 +15,7 @@ import backend_logic
 import tensorflow_data_validation as tfdv
 from tensorflow_data_validation.utils.display_util import get_statistics_html
 
-df = None
+df, numeric_features, df_features_nonempty = None, None, None
 # Initialize the Dash app
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -185,14 +185,11 @@ app.layout = layout
     Output('y-axis', 'options'),
     Output('color', 'options'),
     Output('data-analysis', 'children'),
-    Output('features', 'options'),
-    Output('features', 'disabled'),
     Output('chart type', 'value'), 
     Output('x-axis', 'value'),
     Output('y-axis', 'value'),
     Output('color', 'value'),
     Output('eda-type', 'value'),
-    Output('features', 'value'),
     Output('nan handling strategy', 'disabled'),
     Output('nan handling strategy', 'value'),
     Input('upload-data', 'contents'),
@@ -213,32 +210,33 @@ def read_data(contents, filename):
 
     '''
     
-    global df
+    global df, numeric_features, df_features_nonempty
     if contents is None:
-        return dbc.Alert('No file uploaded yet!', style = {'color': 'red'}), True, {}, {}, {}, None, {}, True, None, \
+        return dbc.Alert('No file uploaded yet!', style = {'color': 'red'}), True, {}, {}, {}, None, \
             None, None, None, None, None, True, None
     else:
         df = backend_logic.read_data(contents, filename)
         if df is None:
-            return dbc.Label('There was an error when loading the data!', style = {'color': 'red'}), True, {}, {}, {}, \
-                None, {}, True, None, None, None, None, None, None, True, None
+            return dbc.Label('There was an error when loading the data!', style = {'color': 'red'}), True, {}, {},\
+                 {}, None, None, None, None, None, None, True, None
         else:
+            
             df_features_nonempty = [column for column in df.columns if not(df[column].isna().all())]
 
             df_features_options = [{'label': column, 'value': column} for column in df_features_nonempty]
             # color dropdown should only get the features that have unique values <= 6 unique values.
             options_color = [column for column in df_features_nonempty if len(df[column].value_counts()) <= 6]
-
+            
             data_stats = tfdv.generate_statistics_from_dataframe(df)
 
             ht=tfdv.get_statistics_html(data_stats)
 
             numeric_features = [feature.path.step[0] for feature in data_stats.datasets[0].features if feature.HasField('num_stats')
                                 and feature.num_stats.common_stats.num_non_missing > 0]
+            #categorical_features = [col for col in df_features_nonempty if col not in numeric_features]
 
             return dbc.Label('{}'.format(filename), style = {'color': '#90EE90'}), False, df_features_options, df_features_options, options_color, \
-            html.Iframe(srcDoc=ht, style = {'width':"100%", 'minHeight': '2500px', 'overflow': 'auto'}), numeric_features, \
-                False, None, None, None, None, None, None, False, 'Drop'
+            html.Iframe(srcDoc=ht, style = {'width':"100%", 'minHeight': '2500px', 'overflow': 'auto'}), None, None, None, None, None, False, 'Drop'
 
 # We are setting the enabling of the dropdown axis based on the chart type, because we will have some chart types
 # with a number of dropdowns enabled and others not e.g. Pie plot does not have x and y axis 
@@ -257,7 +255,7 @@ def dropdown(chart_type):
     else:
         return False, False,False
 
-    
+# This callback concern the 2nd tab in the dashboard which is the 'Charts' tab 
 @app.callback(
     Output('container', 'children'),
     Input('chart type', 'value'),
@@ -278,6 +276,7 @@ def generate_graph(chart_type, xaxis, yaxis, color):
 
     return graph
 
+# This callback concern the 3rd tab of the Dashboard which is the 'Exploratory Data Analysis' tab
 @app.callback(
     Output('eda', 'children'),
     Input('features', 'value'),
@@ -298,10 +297,26 @@ def eda_graph(features, eda_type, nan_strategy):
             return graph
 
         elif eda_type == 'Parallel coordinate' and features is not None and len(features) >= 1:
-            graph = backend_logic.parallel_coordinate(df_nan)
+            graph = backend_logic.parallel_coordinate(df_nan, numeric_features)
             return graph
 
     return None
+
+# To make sure to populate numerical features only for correlation eda
+# And to populate all features (numerical and categorical) for the parallel coordinate eda
+@app.callback(
+    Output('features', 'options'),
+    Output('features', 'disabled'),
+    Output('features', 'value'),
+    Input('eda-type', 'value')
+)
+def features_population(eda_type):
+    if eda_type == 'Correlation':
+        return numeric_features, False, None
+    elif eda_type == 'Parallel coordinate':
+        return df_features_nonempty, False, None
+    else:
+        return {}, True, None
 
 
 # Run the Dash app
